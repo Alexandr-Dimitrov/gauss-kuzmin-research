@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cmath>
 #include <vector>
 #include <map>
 
@@ -13,7 +14,7 @@ int get_fraction_numbers(vector<int> &numbers, string file_name)
 {
     ifstream file(file_name);
     if(!file.is_open()){
-	cerr << "Cannot open file" << endl;
+	cerr << "Не корректный файл на входе." << endl;
 	return 0;
     }
     int temp;
@@ -45,11 +46,38 @@ void print_map(map<int, int>& m)
     }
 }
 
+void print_map(map<int, float>& m)
+{
+    for(const auto& [key, value] : m){
+        cout << '[' << key << "] = " << value << "; " << endl;
+    }
+}
+
+void calculate_gauss_kuzmin(map<int, float> &theoretical, map<int, int> &observed)
+{
+    for(const auto& [key, value] : observed){
+	theoretical[key] = log2(1.0 + 1.0 / (key * (key + 2.0))) * (UPPER_BOUND - LOWER_BOUND);
+    }
+}
+
+void write_data(map<int, float> &theoretical, map<int, int> &observed, string file_name)
+{
+    ofstream file(file_name);
+    for(const auto& [key, value] : observed){
+	file << key << " " << observed[key] << " " << theoretical[key] << endl;
+    }
+    file.close();
+}
+
 int main(int argc, char **argv)
 {
     vector<int> fraction_numbers;
+    map<int, float> theoretical_frequencies;
     map<int, int> observed_frequencies;
     get_fraction_numbers(fraction_numbers, argv[1]);
     observe_frequencies(fraction_numbers, observed_frequencies);
     print_map(observed_frequencies);
+    calculate_gauss_kuzmin(theoretical_frequencies, observed_frequencies);
+    print_map(theoretical_frequencies);
+    write_data(theoretical_frequencies, observed_frequencies, "plot.dat");
 }  
