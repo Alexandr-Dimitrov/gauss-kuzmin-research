@@ -1,0 +1,14 @@
+set terminal pngcairo size 1200,600
+set output './plots/group2_convergence.png'
+
+set xlabel 'Размер окна'
+set ylabel 'KS-расстояние'
+set title 'Сходимость: группа 2 (π и производные)'
+
+plot 'speed_data/pi_continued_10000.dat'       using 1 with lines lw 1.5 title 'π', \
+     'speed_data/pi_plus_e_continued_10000.dat' using 1 with lines lw 1.5 title 'π+e', \
+     'speed_data/pi_pow_e_continued_10000.dat'  using 1 with lines lw 1.5 title 'π^e', \
+     'speed_data/e_pow_pi_continued_10000.dat'  using 1 with lines lw 1.5 title 'e^π', \
+     'speed_data/pi_times_e_continued_10000.dat' using 1 with lines lw 1.5 title 'π*e'
+
+set output
