@@ -6,7 +6,7 @@
 #include <map>
 
 int LOWER_BOUND = 100;
-int UPPER_BOUND = 1000;
+int UPPER_BOUND = 9000;
 
 using namespace std;
 
@@ -73,14 +73,13 @@ float lambda(map<int, int> &observed, int window_size)
 {
     float max_diff = 0;
     int n = 1;
+    int max_n = observed.rbegin()->first;
     while(true){
         float p_theor = log2(1.0 + 1.0 / (n * (n + 2.0)));
         float p_emp = observed.count(n) ? (float)observed[n] / window_size : 0;
-        
         float diff = fabs(p_emp - p_theor);
         if(diff > max_diff) max_diff = diff;
-        
-        if(n >= observed.rbegin()->first) break;
+        if(n >= max_n) break;
         n++;
     }
     return max_diff * sqrtf(window_size);
@@ -121,15 +120,16 @@ int main(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         vector<int> nums;
         map<int, int> obs;
-        vector<float> lmb;
+        //vector<float> lmb;
         string name = argv[i];
 	cout << name << "..." << endl;
         name = name.substr(name.find_last_of('/') + 1);
         name = name.substr(0, name.find_last_of('.'));
         get_fraction_numbers(nums, argv[i]);
-        calculate_distances(nums, argv[i], obs, lmb);
-        write_data(lmb, "./lambdas/" + name + ".dat");
-	fit_power(lmb, name);
+        //calculate_distances(nums, argv[i], obs, lmb);
+	observe_frequencies(nums, obs);   
+	float lmb = lambda(obs, nums.size());
+        cout << name << ": lambda = " << lmb << endl;
 	cout << "  -> готово" << endl;
     }
 }
