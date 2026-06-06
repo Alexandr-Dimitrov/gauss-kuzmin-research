@@ -72,17 +72,21 @@ float ks_distance(map<int, int> &observed, int window_size)
 float lambda(map<int, int> &observed, int window_size)
 {
     float max_diff = 0;
-    int n = 1;
     int max_n = observed.rbegin()->first;
-    while(true){
-        float p_theor = log2(1.0 + 1.0 / (n * (n + 2.0)));
-        float p_emp = observed.count(n) ? (float)observed[n] / window_size : 0;
-        float diff = fabs(p_emp - p_theor);
+    float p_theor = 0;
+    float p_emp = 0;
+    float diff;
+
+    for (int n = 1; n < max_n; n++)
+    {
+        p_theor += log2(1.0 + 1.0 / (n * (n + 2.0)));
+        p_emp += observed.count(n) ? (float)observed[n] / window_size : 0;
+        diff = fabs(p_emp - p_theor);
+
         if(diff > max_diff) max_diff = diff;
-        if(n >= max_n) break;
-        n++;
     }
-    return max_diff * sqrtf(window_size);
+
+    return max_diff;
 }
 
 void calculate_distances(vector<int> &numbers, string file_name,
