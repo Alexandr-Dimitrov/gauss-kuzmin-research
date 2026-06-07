@@ -21,7 +21,7 @@ int get_fraction_numbers(vector<int> &numbers, string file_name)
     cin.rdbuf(file.rdbuf());
     for(int i = 0; i <= UPPER_BOUND; i++){
 	cin >> temp;
-	if(i >= LOWER_BOUND)
+	if(i > LOWER_BOUND)
 	    numbers.push_back(temp);
     }
     return 1;
@@ -37,36 +37,6 @@ int observe_frequencies(vector<int> &numbers, map<int, int> &observed)
 	}
     }
     return 1;
-}
-
-void write_data(vector<float> distances, string file_name)
-{
-    ofstream file(file_name);
-    for(int i = 0; i < distances.size(); i++){
-	file << distances[i] << endl;
-    }
-    file.close();
-}
-
-float ks_distance(map<int, int> &observed, int window_size)
-{
-    float F_emp = 0, F_theor = 0;
-    float max_diff = 0;
-    int n = 1;
-    while(true){
-        float p_theor = log2(1.0 + 1.0 / (n * (n + 2.0)));
-        float p_emp = observed.count(n) ? (float)observed[n] / window_size : 0;
-        
-        F_emp += p_emp;
-        F_theor += p_theor;
-        
-        float diff = fabs(F_emp - F_theor);
-        if(diff > max_diff) max_diff = diff;
-        
-        if(F_theor > 0.999) break;
-        n++;
-    }
-    return max_diff;
 }
 
 float lambda(map<int, int> &observed, int window_size)
@@ -85,7 +55,7 @@ float lambda(map<int, int> &observed, int window_size)
 
         if(diff > max_diff) max_diff = diff;
     }
-    
+
     return max_diff;
 }
 
@@ -94,13 +64,14 @@ int main(int argc, char **argv) {
         vector<int> nums;
         map<int, int> obs;
         string name = argv[i];
-	cout << name << "..." << endl;
+	    cout << name << "..." << endl;
         name = name.substr(name.find_last_of('/') + 1);
         name = name.substr(0, name.find_last_of('.'));
         get_fraction_numbers(nums, argv[i]);
-	observe_frequencies(nums, obs);   
-	float lmb = lambda(obs, nums.size());
+	    observe_frequencies(nums, obs);   
+	    float lmb = lambda(obs, nums.size());
+        cout << "count: " << nums.size() << endl;
         cout << name << ": lambda = " << lmb << endl;
-	cout << "  -> готово" << endl;
+	    cout << "  -> готово" << endl;
     }
 }

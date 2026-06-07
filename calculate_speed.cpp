@@ -13,28 +13,30 @@ using namespace std;
 int get_fraction_numbers(vector<int> &numbers, string file_name)
 {
     ifstream file(file_name);
-    if(!file.is_open()){
-	cerr << "Не корректный файл на входе." << endl;
-	return 0;
+    if(!file.is_open())
+    {
+        cerr << "Не корректный файл на входе." << endl;
+        return 0;
     }
     int temp;
     cin.rdbuf(file.rdbuf());
-    for(int i = 0; i <= UPPER_BOUND; i++){
-	cin >> temp;
-	if(i >= LOWER_BOUND)
-	    numbers.push_back(temp);
+    for(int i = 0; i <= UPPER_BOUND; i++)
+    {
+        cin >> temp;
+        if(i > LOWER_BOUND)
+            numbers.push_back(temp);
     }
     return 1;
 }  
   
 int observe_frequencies(vector<int> &numbers, map<int, int> &observed)
 {
-    for(int i = 0; i < numbers.size(); i++){
-	if(observed.find(numbers[i]) == observed.end()){
-	    observed.insert({numbers[i], 1});
-	} else {
-	    observed[numbers[i]] += 1;
-	}
+    for(int i = 0; i < numbers.size(); i++)
+    {
+        if(observed.find(numbers[i]) == observed.end())
+            observed.insert({numbers[i], 1});
+        else
+            observed[numbers[i]] += 1;
     }
     return 1;
 }
@@ -42,48 +44,49 @@ int observe_frequencies(vector<int> &numbers, map<int, int> &observed)
 void write_data(vector<float> distances, string file_name)
 {
     ofstream file(file_name);
-    for(int i = 0; i < distances.size(); i++){
-	file << distances[i] << endl;
-    }
+    for(int i = 0; i < distances.size(); i++)
+	    file << distances[i] << endl;
     file.close();
 }
 
 float ks_distance(map<int, int> &observed, int window_size)
 {
-    float F_emp = 0, F_theor = 0;
     float max_diff = 0;
-    int n = 1;
-    while(true){
-        float p_theor = log2(1.0 + 1.0 / (n * (n + 2.0)));
-        float p_emp = observed.count(n) ? (float)observed[n] / window_size : 0;
-        
-        F_emp += p_emp;
-        F_theor += p_theor;
-        
-        float diff = fabs(F_emp - F_theor);
+    int max_n = observed.rbegin()->first;
+    float p_theor = 0;
+    float p_emp = 0;
+    float diff;
+
+    for (int n = 1; n <= max_n; n++)
+    {
+        p_theor += log2(1.0 + 1.0 / (n * (n + 2.0)));
+        p_emp += observed.count(n) ? (float)observed[n] / window_size : 0;
+        diff = fabs(p_emp - p_theor);
+
         if(diff > max_diff) max_diff = diff;
-        
-        if(F_theor > 0.999) break;
-        n++;
     }
+    
     return max_diff;
 }
 
 void calculate_distances(vector<int> &numbers, string file_name,
 			 map<int, int> &observed, vector<float> &distances)
 {
-    for(int i = 1; i < UPPER_BOUND - LOWER_BOUND; i++){
-	vector<int> sub(numbers.begin(), numbers.begin() + i);
-	observed.clear();
-	observe_frequencies(sub, observed);
-	distances.push_back(ks_distance(observed, LOWER_BOUND + i));
+    for(int i = 1; i <= UPPER_BOUND - LOWER_BOUND; i++)
+    {
+        vector<int> sub(numbers.begin(), numbers.begin() + i);
+        observed.clear();
+        observe_frequencies(sub, observed);
+        distances.push_back(ks_distance(observed, i));
     }
 }
 
-void fit_power(vector<float>& y, string name) {
+void fit_power(vector<float>& y, string name)
+{
     double S_X = 0, S_Y = 0, S_XX = 0, S_XY = 0;
     int N = 0;
-    for (int i = 0; i < y.size(); i++) {
+    for (int i = 0; i < y.size(); i++)
+    {
         if (y[i] <= 0) continue;
         double x = i + 1;
         double X = log(x);
@@ -100,19 +103,21 @@ void fit_power(vector<float>& y, string name) {
     cout << name << ": y = " << A << " * x^" << B << endl;
 }
 
-int main(int argc, char **argv) {
-    for (int i = 1; i < argc; i++) {
+int main(int argc, char **argv)
+{
+    for (int i = 1; i < argc; i++)
+    {
         vector<int> nums;
         map<int, int> obs;
         vector<float> dist;
         string name = argv[i];
-	cout << name << "..." << endl;
+	    cout << name << "..." << endl;
         name = name.substr(name.find_last_of('/') + 1);
         name = name.substr(0, name.find_last_of('.'));
         get_fraction_numbers(nums, argv[i]);
         calculate_distances(nums, argv[i], obs, dist);
         write_data(dist, "./speed_data/" + name + ".dat");
-	fit_power(dist, name);
-	cout << "  -> готово" << endl;
+	    fit_power(dist, name);
+	    cout << "  -> готово" << endl;
     }
 }
