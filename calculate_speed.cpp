@@ -23,7 +23,7 @@ int get_fraction_numbers(vector<int> &numbers, string file_name)
     for(int i = 0; i <= UPPER_BOUND; i++)
     {
         cin >> temp;
-        if(i > LOWER_BOUND)
+        if(i >= LOWER_BOUND)
             numbers.push_back(temp);
     }
     return 1;

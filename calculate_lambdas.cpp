@@ -21,7 +21,7 @@ int get_fraction_numbers(vector<int> &numbers, string file_name)
     cin.rdbuf(file.rdbuf());
     for(int i = 0; i <= UPPER_BOUND; i++){
 	cin >> temp;
-	if(i > LOWER_BOUND)
+	if(i >= LOWER_BOUND)
 	    numbers.push_back(temp);
     }
     return 1;
@@ -70,7 +70,6 @@ int main(int argc, char **argv) {
         get_fraction_numbers(nums, argv[i]);
 	    observe_frequencies(nums, obs);   
 	    float lmb = lambda(obs, nums.size());
-        cout << "count: " << nums.size() << endl;
         cout << name << ": lambda = " << lmb << endl;
 	    cout << "  -> готово" << endl;
     }
