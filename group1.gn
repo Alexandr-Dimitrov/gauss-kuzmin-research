@@ -4,6 +4,7 @@ set output './plots/group1_convergence.png'
 set xlabel 'Размер окна'
 set ylabel 'KS-расстояние'
 set title 'Сходимость: группа 1 (алгебраические + ζ(3) + ln2)'
+set yrange [0:0.15]
 
 plot 'speed_data/root7_3_continued_10000.dat'  using 1 with lines lw 1.5 title '√(7&3)', \
      'speed_data/cbrt3_continued_10000.dat'    using 1 with lines lw 1.5 title '∛3', \
