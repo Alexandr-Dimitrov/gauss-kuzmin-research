@@ -43,19 +43,21 @@ float lambda(map<int, int> &observed, int window_size)
 {
     float max_diff = 0;
     int max_n = observed.rbegin()->first;
+    cout << max_n << endl;
     float p_theor = 0;
     float p_emp = 0;
     float diff;
 
-    for (int n = 1; n <= max_n; n++)
+    for (const auto& item : observed)
     {
+        int n = item.first;
         p_theor += log2(1.0 + 1.0 / (n * (n + 2.0)));
         p_emp += observed.count(n) ? (float)observed[n] / window_size : 0;
         diff = fabs(p_emp - p_theor);
 
         if(diff > max_diff) max_diff = diff;
     }
-
+    cout << p_emp << endl;
     return max_diff;
 }
 
@@ -68,7 +70,7 @@ int main(int argc, char **argv) {
         name = name.substr(name.find_last_of('/') + 1);
         name = name.substr(0, name.find_last_of('.'));
         get_fraction_numbers(nums, argv[i]);
-	    observe_frequencies(nums, obs);   
+	    observe_frequencies(nums, obs);
 	    float lmb = lambda(obs, nums.size());
         cout << name << ": lambda = " << lmb << endl;
 	    cout << "  -> готово" << endl;
